@@ -1,11 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
+    <h1>Ficha mascota</h1>
+    <input type="text" id="nombre" placeholder="nombre">
+    <input type="text" id="edad" placeholder="edad">
+    <input type="text" id="raza" placeholder="raza">
+    <input type="text" id="alergias" placeholder="alergias">
+    <input type="text" id="tipo" placeholder="tipo">
+    <button onclick="registrarMascota()">Registar</button>
+    <button onclick="editarMascota()">Editar</button>
+
+    <div>
+        <h1> Encuentra tu menu</h1>
+        <input type="text" id="busquedaMenu"  placeholder="Menu que buscas">
+        <button onclick="buscarMenu()">Buscar</button>
+        <button onclick="guardarmenu()">Añadir al carrito</button>
+        <button id="botonmostrar" onclick= "carrito()"> Mostrar carrito </button>
+
+    </div>
+
+    <div>
+        <h1> Carrito</h1>
+        <input type="text" id="nombreMascota"  placeholder="Inserte el nombre de su mascota">
+        <button id="botonmostrar" onclick= "carrito()"> Mostrar carrito </button>
+
+    </div>
     
+    <div id="div1"></div>
+    <script src="./index.js"></script>
+
 </body>
+
 </html>

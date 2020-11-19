@@ -76,19 +76,20 @@ servidor.get("/mostrarmenus/:menu", function (request, response) {
 
 servidor.post("/anyadircarrito", function (request, response) {
     const anyadircarrito = request.body;
+    const nombre = request.params.nombre;
 
-    db.collection("menus").find({menu:anyadircarrito.menu}).toArray(function(error,menu){
-        if(error!==null){
+    db.collection("menus").find({ menu: anyadircarrito.menu }).toArray(function (error, menu) {
+        if (error !== null) {
             response.send(error);
-        }else{
+        } else {
             if (menu[0].stock === "no") {
                 response.send({ mensaje: "Fuera de stock. Disculpen las molestias" })
-            }else{
-                db.collection("carrito").insertOne({menu:anyadircarrito.menu,unidades:anyadircarrito.unidades}, function (error, datos){
-                    if(error!==null){
+            } else {
+                db.collection("mascotas").updateOne({ nombre: anyadircarrito.nombre }, { $set: { carrito: anyadircarrito.carrito } }, function (error, datos) {
+                    if (error !== null) {
                         response.send(error);
-                    }else{
-                        response.send({mensaje: "Menu añadido"});
+                    } else {
+                        response.send({ mensaje: "Menu añadido" });
                     }
                 })
             }
@@ -98,6 +99,74 @@ servidor.post("/anyadircarrito", function (request, response) {
 
 //Ahora pasamos por la caja para pagar, pero a la hora de pagar uno de los requisitos es estar registrado (en este caso nuestra mascota)//
 
+//1. Mostramos el carro de la compra, por lo que utilizamos el GET//
+
+servidor.get("/mostrarcarro/:nombre", function (request, response) {
+    const nombre = request.params.nombre;
+    db.collection("mascotas").find({ nombre: nombre }).toArray(function (error, datos) {
+        if (error !== null) {
+            response.send(error);
+        } else response.send(datos);
+    })
+})
+
+//2. Modificamos unidades de menús//
+//Ruta PUT para editar las unidades//
+
+servidor.put("/editarcarro/:nombre", function (request, response) {
+    const nombre = request.body.nombre;
+    const carrito = {
+
+        unidades: request.body.unidades,
+    };
+
+    db.collection("mascotas").updateOne({ nombre: nombre }, { $set: { carrito: carrito.unidades } }, function (error, datos) {
+        if (error !== null) {
+            response.send(error);
+        } else {
+            response.send(datos);
+        }
+    })
+});
+
+//3.Eliminamos aquel producto que no queremos comprar con el metodo DELETE//
+
+servidor.delete("/borrarCarro/:nombre", function (request, response) {
+    const nombre = request.params.nombre;
+
+    db.collection("mascotas").updateOne({ nombre: nombre }, { $set: { carrito: [] } }, function (error, datos) {
+        if (error !== null) {
+            response.send(error)
+        } else {
+            response.send(datos);
+        }
+    })
+});
+
+//Una vez que hayamos hecho modificaciones pertinentes, pagamos. PERO, no se puede pagar si la mascota no está registrada//
+// Hacemos un DELETE para vaciar el carro//
+
+servidor.delete("/pagar/:menu/:nombre", function (request, response) {
+    const nombre = request.params.nombre;
+    const menu = request.params.menu;
 
 
+    db.collection("mascotas").find({ nombre: nombre }).toArray(function (error, mascota) {
+        if (error !== null) {
+            response.send(error)
+        } else {
+            if (mascota.length === 0) {
+                response.send({ mensaje: "Mascota no registrada" })
+            } else {
+                db.collection("carrito").deleteMany({ menu: menu }, function (error, datos) {
+                    if (error !== null) {
+                        response.send(error);
+                    } else {
+                        response.send({ mensaje: "¡Gracias por su compra!" })
+                    }
+                })
+            }
+        }
+    })
+})
 servidor.listen(3000);
