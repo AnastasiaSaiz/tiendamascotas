@@ -1,0 +1,27 @@
+#Header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    font-family: "Encode Sans";
+    font-stretch: normal;
+    margin: 20px;
+
+}
+#Enlaces {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-right: 10px;
+    margin: 10px;
+    border-radius: 10px;
+}
+#Enlaces a {
+    background-color: #654e24;
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 1px;
+
+}

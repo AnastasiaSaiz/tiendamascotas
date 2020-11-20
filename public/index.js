@@ -64,7 +64,8 @@ function menus() {
         for (let i = 0; i < datos.length; i++) {
             menus += `
         <div>
-        <p>Menu : ${datos[i].menu}</p>
+        <h5>Menu : ${datos[i].menu}</h5>
+        <img src="${datos[i].imagen}" alt="" />
         <p>Stock : ${datos[i].stock}</p>
         <p>Peso : ${datos[i].peso}</p>
         <p>Precio : ${datos[i].precio}</p>
@@ -90,6 +91,7 @@ function buscarMenu() {
             let comida = `
           <div>
               <h1>${datos[0].menu}</h1>
+              <img src="${datos[0].imagen}" alt="" />
               <p>Stock: ${datos[0].stock}</p>
               <p>Peso: ${datos[0].peso}</p>
               <p>Precio €: ${datos[0].precio}</p>
@@ -103,10 +105,11 @@ function buscarMenu() {
 
 function guardarmenu() {
     const menu = document.getElementById("busquedaMenu").value;
-
+const nombre =document.getElementById("nombreMascota").value;
 
     const carrito = {
-        menu
+        menu,
+        nombre
     }
     fetch("/anyadircarrito", {
         method: "POST",
@@ -125,22 +128,44 @@ function guardarmenu() {
 carrito();
 function carrito() {
     const nombre = document.getElementById("nombreMascota").value;
+    const menu = document.getElementById("botonmostrar").value;
+    const cesta={
+        menu
+    }
 
     fetch(`/mostrarcarro/${nombre}`)
         .then(function (response) {
             return response.json()
         }).then(function (datos) {
-            let menus = ""
-            for (let i = 0; i < datos.length; i++) {
-                menus += `
+            let cesta = ""
+            for (let i = 0; i < datos[0].carrito.length; i++) {
+                console.log(datos);
+                cesta += `
         <div>
-        <p>Menu : ${datos[i].menu}</p>
-        <p>Unidades : ${datos[i].unidades}</p>
-        <p>Precio : ${datos[i].precio}</p>
+        <p>Menu : ${datos[0].carrito[i].menu}</p>
+        <p>Stock : ${datos[0].carrito[i].stock}</p>
+        
         </div>
         
         `;
             }
-            document.getElementById("div1").innerHTML = menus;
+            document.getElementById("div1").innerHTML = cesta;
         })
+}
+
+function pagar() {
+    const nombre = document.getElementById("botonmostrar").value;
+    fetch(`/borrarCarro/${nombre}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(),
+
+    }).then(function (response) {
+        return response.json();
+    }).then(function (datos) {
+        console.log(datos);
+        carrito();
+    });
 }

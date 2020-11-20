@@ -32,6 +32,16 @@ servidor.post("/registro", function (request, response) {
     });
 });
 
+//mostrar ficha mascota//
+
+servidor.get("/mostrarmascota/:nombre", function (request, response) {
+    const nombre = request.params.nombre
+    db.collection("mascotas").find({ nombre: nombre }).toArray(function (error, datos) {
+        if (error !== null) {
+            response.send(error);
+        } else response.send(datos);
+    })
+});
 //*FUNCIONA//Ruta PUT para editar a la mascota//los datos que se podrán modificar es la edad y si tiene alergias//
 
 servidor.put("/editarmascota", function (request, response) {
@@ -75,8 +85,9 @@ servidor.get("/mostrarmenus/:menu", function (request, response) {
 //Ruta POST para añadir el menu// 
 
 servidor.post("/anyadircarrito", function (request, response) {
+    let cesta=[];
+    
     const anyadircarrito = request.body;
-    const nombre = request.params.nombre;
 
     db.collection("menus").find({ menu: anyadircarrito.menu }).toArray(function (error, menu) {
         if (error !== null) {
@@ -85,13 +96,24 @@ servidor.post("/anyadircarrito", function (request, response) {
             if (menu[0].stock === "no") {
                 response.send({ mensaje: "Fuera de stock. Disculpen las molestias" })
             } else {
-                db.collection("mascotas").updateOne({ nombre: anyadircarrito.nombre }, { $set: { carrito: anyadircarrito.carrito } }, function (error, datos) {
-                    if (error !== null) {
+                db.collection("mascotas").find({nombre:anyadircarrito.nombre}).toArray(function(error,carrito){
+                    if(error!==null){
                         response.send(error);
-                    } else {
-                        response.send({ mensaje: "Menu añadido" });
+                    }else{
+                        cesta=carrito[0].carrito;
+                        console.log(cesta);
+                        cesta.push(menu[0]);
+                        
+                        db.collection("mascotas").updateOne({ nombre: anyadircarrito.nombre }, { $set: { carrito:cesta } }, function (error, datos) {
+                            if (error !== null) {
+                                response.send(error);
+                            } else {
+                                response.send({ mensaje: "Menu añadido" });
+                            }
+                        })
                     }
                 })
+                
             }
         }
     })
@@ -103,6 +125,7 @@ servidor.post("/anyadircarrito", function (request, response) {
 
 servidor.get("/mostrarcarro/:nombre", function (request, response) {
     const nombre = request.params.nombre;
+    
     db.collection("mascotas").find({ nombre: nombre }).toArray(function (error, datos) {
         if (error !== null) {
             response.send(error);
@@ -129,16 +152,45 @@ servidor.put("/editarcarro/:nombre", function (request, response) {
     })
 });
 
-//3.Eliminamos aquel producto que no queremos comprar con el metodo DELETE//
-
-servidor.delete("/borrarCarro/:nombre", function (request, response) {
+//Borrar menu  de la cesta//
+servidor.delete("/borrarMenu/:nombre", function (request, response) {
     const nombre = request.params.nombre;
+    const menu = request.params.menu;
+    
+    console.log(anyadircarrito);
+
+    db.collection("mascotas").find({nombre:menu.nombre}).toArray(function(error,carrito){
+        if(error!==null){
+            response.send(error);
+        }else{
+            cesta=carrito[0].carrito;
+            console.log(cesta);
+            cesta.push(menu[0]);
+            
+            db.collection("mascotas").updateOne({ nombre: anyadircarrito.nombre }, { $set: { carrito:[0] } }, function (error, datos) {
+                if (error !== null) {
+                    response.send(error);
+                } else {
+                    response.send({ mensaje: "Menu elminado" });
+                }
+            })
+        }
+
+    
+    })
+});
+
+//3.PAGAR  PUT//
+
+servidor.put("/borrarCarro/:nombre", function (request, response) {
+    const nombre = request.params.nombre;
+    
 
     db.collection("mascotas").updateOne({ nombre: nombre }, { $set: { carrito: [] } }, function (error, datos) {
         if (error !== null) {
             response.send(error)
         } else {
-            response.send(datos);
+            response.send({mensaje:"¡Gracias por su compra!"});
         }
     })
 });

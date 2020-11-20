@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div>
+        <h1> Encuentra tu menu</h1>
+        <input type="text" id="nombreMascota"  placeholder="Inserte el nombre de su mascota">
+        <input type="text" id="busquedaMenu"  placeholder="Menu que buscas">
+        <button onclick="buscarMenu()">Buscar</button>
+        <button onclick="guardarmenu()">Añadir al carrito</button>
+        <button id="botonmostrar" onclick= "carrito()"> Mostrar carrito </button>
+        <button onclick="location.href='./carrito.html'">Llévame a otro lado</button>
+    
+    </div>
+    <div id="div1"></div>
+        <script src="./menu.js"></script>
+</body>
+</html>
